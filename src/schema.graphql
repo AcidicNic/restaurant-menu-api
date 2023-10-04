@@ -1,0 +1,39 @@
+type Choice {
+    name: String!
+    priceAdjustment: Float
+}
+
+type Option {
+    id: ID!
+    name: String!
+    choices: [Choice!]!
+}
+
+type MenuItem {
+    id: ID!
+    name: String!
+    description: String!
+    price: Float!
+    options: [Option]
+    category: Category!
+    subCategory: SubCategory!
+}
+
+type SubCategory {
+    name: String!
+    menuItems: [MenuItem!]!
+}
+
+type Category {
+    id: ID!
+    name: String!
+    subCategories: [SubCategory]
+    notes: String
+    menuItems: [MenuItem!]!
+}
+
+type Query {
+    categories: [Category!]!
+    menuItems: [MenuItem!]!
+    menuItem(Id: ID!): MenuItem
+}
