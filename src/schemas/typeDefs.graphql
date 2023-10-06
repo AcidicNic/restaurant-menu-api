@@ -1,0 +1,113 @@
+"""
+A menu item.
+"""
+type MenuItem {
+    """The ID of the menu item."""
+    id: ID!
+
+    """The name of the menu item."""
+    name: String!
+
+    """The description of the menu item."""
+    description: String!
+
+    """The price of the menu item."""
+    price: Float!
+
+    """The options available for the menu item."""
+    options: [Option]
+
+    """The category the menu item belongs to."""
+    category: Category!
+
+    """The subcategory the menu item belongs to."""
+    subCategory: SubCategory
+}
+
+"""
+A category for a menu.
+"""
+type Category {
+    """The ID of the category."""
+    id: ID!
+
+    """The name of the category."""
+    name: String!
+
+    """Additional notes about the category."""
+    notes: String
+
+    """The subcategories in the category. If the category has no subcategories, this will be an empty array."""
+    subCategories: [SubCategory]
+}
+
+"""
+A subcategory for a menu category.
+"""
+type SubCategory {
+    """The ID of the subcategory."""
+    id: ID!
+
+    """The name of the subcategory.."""
+    name: String!
+}
+
+"""
+An option for a menu item.
+"""
+type Option {
+    """The ID of the option."""
+    id: ID!
+
+    """The name of the option."""
+    name: String!
+
+    """The choices available for the option."""
+    choices: [Choice!]!
+}
+
+"""
+A choice for a menu item option.
+"""
+type Choice {
+    """The name of the choice."""
+    name: String!
+
+    """The price adjustment for the choice. If the choice is free, this will be 0."""
+    priceAdjustment: Float
+}
+
+"""
+The root query for the menu API.
+"""
+type Query {
+    """Get all menu items."""
+    allMenuItems: [MenuItem]!
+
+    """Get menu items by their IDs."""
+    menuItems(ids: [ID]): [MenuItem]!
+
+    """Get menu items by their category IDs."""
+    menuItemsByCategories(ids: [ID]): [MenuItem]!
+
+    """Get menu items by their sub category IDs."""
+    menuItemsBySubCategories(ids: [ID]): [MenuItem]!
+
+    """Get all categories."""
+    allCategories: [Category]!
+
+    """Get a categories by their IDs."""
+    categories(ids: [ID]): [Category]!
+
+    """Get all sub categories."""
+    allSubCategories: [SubCategory]!
+
+    """Get sub categories by their IDs."""
+    subCategories(ids: [ID]): [SubCategory]!
+
+    """Get all options."""
+    allOptions: [Option]!
+
+    """Get option by their IDs."""
+    options(ids: [ID]): [Option]!
+}

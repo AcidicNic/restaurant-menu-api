@@ -9,21 +9,11 @@
 
 ## Notes
 
-For this exercise, I decided to store the menu data in a JSON file (`data/data.json`), because the data is static. The json file is structured similar to how would structure a PostgreSQL DB for this project. Normally, I would use PostgreSQL. I would also include CRUD methods and GraphQL mutations. As well as a table for menus, so that alternate menus could be used and created.
+Normally, I would use PostgreSQL, but for this exercise I decided to store the menu data in a JSON file (`src/data/data.json`). This is because the data is static and I wanted this to be easy & quick to run. I would also include CRUD methods and GraphQL mutations. As well as a table for menus, so that alternate menus could be used and created.
 
-The JSON menu is made up of `categories`, `menuItems`, and `options`. I simplified a bit and included `subCategories` inside of `categories` and `choices` in `options`. In a real relational database `subcategories` and `options` would have in their own tables and have their own IDs and foreign keys.
+The JSON menu is made up of `categories`, `subCategories`, `menuItems`, and `options`. Each object in these fields has it's own ID, similar to how a relational DB like PostgreSQL would be structured.
 
-I've used GraphQL APIs, but I've never actually made an API with GraphQL so this was a fun exercise. I used [?](?) to create the GraphQL server. I used [?](?) for unit testing and [ESLint](https://eslint.org/) for linting.
-
-## To-Do
-
-- [ ] Fix resolvers
-- [ ] Add type documentation/definitions for the client.
-- [ ] Clean up code and file structure.
-- [ ] Add comments.
-- [ ] Add chai unit tests.
-
----
+I've used GraphQL APIs, but I've never actually made an API with GraphQL so this was a fun exercise.
 
 ## Install & Setup
 
@@ -39,25 +29,6 @@ $ npm install --include=dev
 
 ## Usage
 
-### Run the server locally
-
-```bash
-# Run the app
-$ nodemon
-```
-
-At http://localhost:4000/graphql, you will find the GraphQL client.
-POST requests can be sent here as well.
-
-### Run unit tests
-
-```bash
-# Run the app
-$ yarn test
-# OR
-$ npm run test
-```
-
 ### Lint
 
 ```bash
@@ -66,4 +37,252 @@ $ yarn lint
 # OR
 $ npm run lint
 ```
-s
+
+### Run the server locally
+
+```bash
+# Run the app
+$ yarn start
+# OR
+$ npm run start
+```
+
+Load up <http://localhost:4000/graphql>, to use the GUI. HTTP requests can be sent here as well.
+
+The sidebar on the left displays all fields and their descriptions. Click on a field to select/deselect it. I've included descriptions for all of the fields and types, which you can also see in the client.
+
+Upon opening up the client, you should see the default query. This includes all of the available query fields, so they can easily be tested.
+
+## Types
+
+### MenuItem
+
+* id: ID!
+* name: String!
+* description: String!
+* price: Float!
+* category: Category!
+* subCategory: SubCategory (nullable)
+* options: [Option] (nullable)
+
+### Category
+
+* id: ID!
+* name: String!
+* notes: String (nullable)
+* subCategories: [SubCategory] (nullable)
+
+### SubCategory
+
+* id: ID!
+* name: String!
+
+### Option
+
+* id: ID!
+* name: String!
+* choices: [Choice!]!
+
+### Choice
+
+* name: String!
+* priceAdjustment: Float (nullable)
+
+### Query Types
+
+There's queries that return all objects of a type. There's queries for each type that return specific objects by their ID(s). There's also queries that return MenuItems by the Category and SubCategory ID(s).
+
+```graphql
+type Query {
+    """Get all menu items."""
+    allMenuItems: [MenuItem]!
+
+    """Get menu items by their IDs."""
+    menuItems(ids: [ID]): [MenuItem]!
+
+    """Get menu items by their category IDs."""
+    menuItemsByCategories(ids: [ID]): [MenuItem]!
+
+    """Get menu items by their sub category IDs."""
+    menuItemsBySubCategories(ids: [ID]): [MenuItem]!
+
+    """Get all categories."""
+    allCategories: [Category]!
+
+    """Get a categories by their IDs."""
+    categories(ids: [ID]): [Category]!
+
+    """Get all sub categories."""
+    allSubCategories: [SubCategory]!
+
+    """Get sub categories by their IDs."""
+    subCategories(ids: [ID]): [SubCategory]!
+
+    """Get all options."""
+    allOptions: [Option]!
+
+    """Get option by their IDs."""
+    options(ids: [ID]): [Option]!
+}
+```
+
+## Example Queries
+
+### Get All
+
+```graphql
+query GetAllQuery {
+
+  allMenuItems {
+    id
+    name
+    description
+    price
+    category {
+      id
+      name
+      notes
+    }
+    subCategory {
+      id
+      name
+    }
+    options {
+      id
+      name
+      choices {
+        name
+        priceAdjustment
+      }
+    }
+  }
+  
+  allCategories {
+    id
+    name
+    notes
+    subCategories {
+      id
+      name
+    }
+  }
+
+  allSubCategories {
+    id
+    name
+  }
+  
+  allOptions {
+    choices {
+      priceAdjustment
+      name
+    }
+    id
+    name
+  }
+}
+```
+
+### Get By ID(s)
+
+```graphql
+{
+  # Getting specific types by their ID(s)
+
+  menuItems(ids: [11]) {
+     id
+    name
+    description
+    price
+    category {
+      id
+      name
+      notes
+    }
+    subCategory {
+      id
+      name
+    }
+    options {
+      id
+      name
+      choices {
+        name
+        priceAdjustment
+      }
+    }
+  }
+
+  menuItemsByCategories(ids: [7, 8]) {
+    id
+    name
+    description
+    price
+    category {
+      id
+      name
+      notes
+    }
+    subCategory {
+      id
+      name
+    }
+    options {
+      id
+      name
+      choices {
+        name
+        priceAdjustment
+      }
+    }
+  }
+
+  categories(ids: [3, 4]) {
+    id
+    name
+    subCategories {
+      id
+      name
+    }
+  }
+
+  subCategories(ids: [1, 2]) {
+    id
+    name
+  }
+
+  options(ids: [3]) {
+    id
+    name
+    choices {
+      name
+      priceAdjustment
+    }
+  }
+
+  menuItemsByCategories(ids: [7, 8]) {
+    id
+    name
+    description
+    price
+    category {
+      id
+      name
+      notes
+    }
+    subCategory {
+      id
+      name
+    }
+    options {
+      id
+      name
+      choices {
+        name
+        priceAdjustment
+      }
+    }
+  }
+
+  
+```
